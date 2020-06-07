@@ -11,7 +11,7 @@ const SelectCurrency = () => {
     queries.appConfig
   );
   const currency = appConfigData?.appConfig?.currency;
-  if (appConfigError) console.log("appConfigError", appConfigError);
+  if (appConfigError) console.log("appConfigError", appConfigError.message);
 
   // get list of currencies from coinbase API via apollo server
   const {
@@ -20,14 +20,17 @@ const SelectCurrency = () => {
     data: currenciesData
   } = useQuery(queries.currencies);
   const currencies = currenciesData?.currencies || [];
-  if (currenciesError) console.log(currenciesError);
+  if (currenciesError) console.log(currenciesError.message);
+  //
 
   // set selected currency in component state
   const [value, setValue] = useState(currency?.id || "");
   const [inputValue, setInputValue] = useState(currency?.id || "");
+  //
 
   // set open dropdown for autocomplete in component state
   const [open, setOpen] = useState(false);
+  //
 
   // set selected currency in cache using component state
   const [setCurrencyId] = useMutation(mutations.setAppConfig, {
@@ -38,6 +41,7 @@ const SelectCurrency = () => {
       setCurrencyId();
     }
   }, [value, setCurrencyId]);
+  //
 
   return (
     <Autocomplete

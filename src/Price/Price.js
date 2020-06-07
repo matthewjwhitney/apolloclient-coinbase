@@ -1,32 +1,37 @@
 import React, { useEffect } from "react";
 import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 import { Skeleton } from "@material-ui/lab";
+import { Typography } from "@material-ui/core";
 
 import { queries } from "../gql";
 
 const Price = () => {
+  // get selected currency from cache
   const { data: appConfigData } = useQuery(queries.appConfig);
   const currency = appConfigData?.appConfig?.currency;
-  console.log("currency", currency);
-  const [getSellPrice, { loading, error, data }] = useLazyQuery(
+  //
+
+  // get spot price of bitcoin using selected currency
+  const [getSpotPrice, { loading, error, data }] = useLazyQuery(
     queries.spotPrice,
     {
       variables: { currency: currency?.id },
-      pollInterval: 1000
+      pollInterval: 1
     }
   );
   useEffect(() => {
     if (currency && currency !== "") {
-      getSellPrice();
+      getSpotPrice();
     }
-  }, [currency, getSellPrice]);
+  }, [currency, getSpotPrice]);
   const spotPrice = data?.spotPrice?.amount;
-  console.log("spotPrice", spotPrice);
+  //
+
   return (
     <>
-      {loading && !spotPrice && <Skeleton variant="text" />}
-      {error && <p>Bitcoin Price: {error.message}</p>}
-      {spotPrice && <p>Bitcoin Price: {spotPrice}</p>}
+      {loading && !spotPrice && <Skeleton width={200} variant="text" />}
+      {error && <Typography>Error: {error.message}</Typography>}
+      {spotPrice && <Typography>Bitcoin Price: {spotPrice}</Typography>}
     </>
   );
 };
