@@ -2,23 +2,18 @@ import queries from "./queries";
 
 const resolvers = {
   Query: {
-    AppConfig: (_root, _variables, { client }) =>
-      client.readQuery(queries.appConfig)
+    appConfig: (_root, _variables, { client }) =>
+      client.readQuery(queries.appConfig),
   },
   Mutation: {
-    setAppConfig: (_root, { currency }, { client }) => {
+    setAppConfig: (_, { currency }, { cache }) => {
       const data = {
-        appConfig: {
-          currency
-        }
+        appConfig: { __typename: "AppConfig", currency },
       };
-      client.writeQuery({
-        query: queries.appConfig,
-        data
-      });
+      cache.writeData({ data });
       return data;
-    }
-  }
+    },
+  },
 };
 
 export default resolvers;

@@ -5,15 +5,15 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  makeStyles
+  makeStyles,
 } from "@material-ui/core";
 
 import { queries, mutations } from "./gql";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
-    minWidth: 120
-  }
+    minWidth: 120,
+  },
 }));
 
 const SelectCurrency = () => {
@@ -21,7 +21,7 @@ const SelectCurrency = () => {
   const {
     data: appConfigData,
     loading: appConfigLoading,
-    error: appConfigError
+    error: appConfigError,
   } = useQuery(queries.appConfig);
   const currency = appConfigData?.appConfig?.currency;
   if (appConfigError) console.log("appConfigError", appConfigError);
@@ -32,7 +32,7 @@ const SelectCurrency = () => {
   const {
     loading: currenciesLoading,
     error: currenciesError,
-    data: currenciesData
+    data: currenciesData,
   } = useQuery(queries.currencies);
   const currencies = currenciesData?.currencies;
   if (currenciesError) console.log(currenciesError);
@@ -40,7 +40,7 @@ const SelectCurrency = () => {
 
   // set selected currency in component state
   const [value, setValue] = useState(currency?.id || "");
-  const handleChange = event => {
+  const handleChange = (event) => {
     setValue(event.target.value);
   };
   // if currency from appConfig resolves and is different from value, set value to currency in appConfig
@@ -55,7 +55,7 @@ const SelectCurrency = () => {
   const [setCurrencyId, { data: mutationData }] = useMutation(
     mutations.setAppConfig,
     {
-      variables: { currency: value }
+      variables: { currency: value },
     }
   );
   useEffect(() => {
@@ -80,7 +80,7 @@ const SelectCurrency = () => {
           <MenuItem disabled>Loading...</MenuItem>
         )}
         {currencies &&
-          currencies.map(currency => (
+          currencies.map((currency) => (
             <MenuItem key={currency.id} value={currency}>
               {`${currency.id} - ${currency.name}`}
             </MenuItem>

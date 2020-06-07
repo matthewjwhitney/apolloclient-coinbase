@@ -3,9 +3,13 @@ import gql from "graphql-tag";
 const queries = {
   appConfig: gql`
     query appConfig {
-      appConfig @client(always: true) {
+      appConfig @client {
         __typename
-        currency
+        currency @client {
+          __typename
+          id
+          name
+        }
       }
     }
   `,
@@ -32,7 +36,7 @@ const queries = {
         currency
       }
     }
-  `
+  `,
 };
 
 export default queries;

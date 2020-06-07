@@ -4,10 +4,15 @@ const mutations = {
   setAppConfig: gql`
     mutation setAppConfig($currency: ID) {
       setAppConfig(currency: $currency) @client {
-        currency
+        __typename
+        currency {
+          id
+          name
+          __typename
+        }
       }
     }
-  `
+  `,
 };
 
 export default mutations;
