@@ -21,10 +21,11 @@ const App = () => (
   <ApolloProvider client={client}>
     <Typography variant="h4">Apollo Client - Coinbase API</Typography>
     <Typography>
-      A front end react application that uses Apollo Client to store the
-      selected currency in local cache, and then using that selected currency,
-      fetch the Bitcoin spot price for that currency from Coinbase API via an
-      Apollo Server.
+      A front end react application that uses Apollo Client to fetch a list of
+      currencies from Coinbase API via an Apollo Server, store the selected
+      currency in local cache, and then using that selected currency, fetch the
+      Bitcoin spot price for that currency from Coinbase API via an Apollo
+      Server.
     </Typography>
     <br />
     <Typography variant="h5">Demo</Typography>
