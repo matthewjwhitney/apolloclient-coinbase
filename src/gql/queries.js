@@ -21,22 +21,14 @@ const queries = {
       }
     }
   `,
-  buyPrice: gql`
-    query buyPrice($currency: String!) {
-      buyPrice(currency: $currency) {
+  spotPrice: gql`
+    query spotPrice($currency: String!) {
+      spotPrice(currency: $currency) {
         amount
         currency
       }
     }
-  `,
-  sellPrice: gql`
-    query sellPrice($currency: String!) {
-      sellPrice(currency: $currency) {
-        amount
-        currency
-      }
-    }
-  `,
+  `
 };
 
 export default queries;

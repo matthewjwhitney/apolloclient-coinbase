@@ -1,92 +1,86 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  makeStyles,
-} from "@material-ui/core";
+import { TextField, CircularProgress } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 
 import { queries, mutations } from "./gql";
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    minWidth: 120,
-  },
-}));
-
 const SelectCurrency = () => {
   // get selected currency from cache
-  const {
-    data: appConfigData,
-    loading: appConfigLoading,
-    error: appConfigError,
-  } = useQuery(queries.appConfig);
+  const { data: appConfigData, error: appConfigError } = useQuery(
+    queries.appConfig
+  );
   const currency = appConfigData?.appConfig?.currency;
   if (appConfigError) console.log("appConfigError", appConfigError);
-  if (appConfigLoading) console.log("appConfigLoading", appConfigLoading);
-  console.log("appConfig.currency", currency);
 
-  // get list of currencies from apollo server coinbase api
+  // get list of currencies from coinbase API via apollo server
   const {
     loading: currenciesLoading,
     error: currenciesError,
-    data: currenciesData,
+    data: currenciesData
   } = useQuery(queries.currencies);
-  const currencies = currenciesData?.currencies;
+  const currencies = currenciesData?.currencies || [];
   if (currenciesError) console.log(currenciesError);
-  console.log("currencies", currencies);
 
   // set selected currency in component state
   const [value, setValue] = useState(currency?.id || "");
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
-  // if currency from appConfig resolves and is different from value, set value to currency in appConfig
-  useEffect(() => {
-    if (currency && value !== currency) {
-      setValue(currency);
-    }
-  }, [currency, value]);
-  console.log("value", value);
+  const [inputValue, setInputValue] = useState(currency?.id || "");
+
+  // set open dropdown for autocomplete in component state
+  const [open, setOpen] = useState(false);
 
   // set selected currency in cache using component state
-  const [setCurrencyId, { data: mutationData }] = useMutation(
-    mutations.setAppConfig,
-    {
-      variables: { currency: value },
-    }
-  );
+  const [setCurrencyId] = useMutation(mutations.setAppConfig, {
+    variables: { currency: value }
+  });
   useEffect(() => {
     if (value) {
       setCurrencyId();
     }
   }, [value, setCurrencyId]);
-  console.log("mutationData", mutationData);
-
-  const classes = useStyles();
 
   return (
-    <FormControl className={classes.formControl}>
-      <InputLabel id="selectCurrencyLabel">Currency</InputLabel>
-      <Select
-        labelId="selectCurrencyLabel"
-        id="selectCurrency"
-        value={value}
-        onChange={handleChange}
-      >
-        {currenciesLoading && !currencies && (
-          <MenuItem disabled>Loading...</MenuItem>
-        )}
-        {currencies &&
-          currencies.map((currency) => (
-            <MenuItem key={currency.id} value={currency}>
-              {`${currency.id} - ${currency.name}`}
-            </MenuItem>
-          ))}
-      </Select>
-    </FormControl>
+    <Autocomplete
+      value={value}
+      onChange={(event, newValue) => {
+        setValue(newValue);
+      }}
+      inputValue={inputValue}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
+      id="selectCurrency"
+      options={currencies}
+      style={{ width: 300 }}
+      open={open}
+      onOpen={() => {
+        setOpen(true);
+      }}
+      onClose={() => {
+        setOpen(false);
+      }}
+      getOptionSelected={(option, value) => option.id === value.id}
+      getOptionLabel={option => option && `${option.id} - ${option.name}`}
+      loading={currenciesLoading}
+      renderInput={params => (
+        <TextField
+          {...params}
+          label="Currency"
+          variant="outlined"
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {currenciesLoading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            )
+          }}
+        />
+      )}
+    />
   );
 };
 
