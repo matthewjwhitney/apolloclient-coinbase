@@ -3,7 +3,7 @@ import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 import { Skeleton } from "@material-ui/lab";
 import { Typography } from "@material-ui/core";
 
-import { queries } from "../gql";
+import { queries } from "./gql";
 
 const Price = () => {
   // get selected currency from cache
@@ -31,7 +31,9 @@ const Price = () => {
     <>
       {loading && !spotPrice && <Skeleton width={200} variant="text" />}
       {error && <Typography>Error: {error.message}</Typography>}
-      {spotPrice && <Typography>Bitcoin Price: {spotPrice}</Typography>}
+      {spotPrice && !loading && (
+        <Typography>Bitcoin Price: {spotPrice}</Typography>
+      )}
     </>
   );
 };
