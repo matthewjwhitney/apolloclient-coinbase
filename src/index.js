@@ -9,7 +9,13 @@ import { resolvers, typeDefs } from "./gql";
 import SelectCurrency from "./SelectCurrency";
 
 const cache = new InMemoryCache({});
-
+const data = {
+  appConfig: {
+    __typename: "AppConfig",
+    currency: { id: "USD", name: "US Dollar", __typename: "Currency" }
+  }
+};
+cache.writeData({ data });
 const client = new ApolloClient({
   cache,
   resolvers,
